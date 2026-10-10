@@ -1,0 +1,67 @@
+{
+  "data": [
+    {
+      "id": 123456,
+      "description": "Home",
+      "aggregatedStatus": "WorksProperly",
+      "gateways": [
+        {
+          "serial": "7571381573112225",
+          "version": "1.0.0",
+          "aggregatedStatus": "Online",
+          "gatewayType": "VitoconnectOptolink",
+          "devices": [
+            {
+              "gatewaySerial": "7571381573112225",
+              "id": "gateway",
+              "modelId": "Heatbox1",
+              "status": "Online",
+              "deviceType": "vitoconnect",
+              "roles": ["type:gateway;VitoconnectOpto1"]
+            },
+            {
+              "gatewaySerial": "7571381573112225",
+              "id": "0",
+              "modelId": "VScotHO1_200_11",
+              "status": "Online",
+              "deviceType": "heating",
+              "roles": ["type:boiler", "type:legacy"]
+            }
+          ]
+        },
+        {
+          "serial": "7633107093013212",
+          "version": "1.0.0",
+          "aggregatedStatus": "Online",
+          "gatewayType": "TCU300",
+          "devices": [
+            {
+              "gatewaySerial": "7633107093013212",
+              "id": "gateway",
+              "modelId": "E3_TCU41_x04",
+              "status": "Online",
+              "deviceType": "tcu",
+              "roles": ["type:gateway;TCU300"]
+            },
+            {
+              "gatewaySerial": "7633107093013212",
+              "id": "0",
+              "modelId": "E3_Vitocal_250A",
+              "status": "Online",
+              "deviceType": "heating",
+              "roles": ["type:heatpump", "type:E3"]
+            },
+            {
+              "gatewaySerial": "7633107093013212",
+              "id": "RoomControl-1",
+              "modelId": "E3_RoomControl_One_522",
+              "status": "Online",
+              "deviceType": "roomControl",
+              "roles": ["type:E3"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

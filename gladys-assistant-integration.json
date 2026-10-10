@@ -1,0 +1,75 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "Viessmann ViCare",
+  "description": {
+    "en": "Viessmann boilers and heat pumps through ViCare: heating, hot water and sensors.",
+    "fr": "Chaudières et pompes à chaleur Viessmann via ViCare : chauffage, eau chaude, capteurs."
+  },
+  "version": "0.1.0",
+  "docker_image": "ghcr.io/bertrandda/gladys-viessmann:0.1.0",
+  "gladys_version": ">=5.1.0",
+  "cover_image": "https://raw.githubusercontent.com/bertrandda/gladys-viessmann/master/cover.png",
+  "categories": ["climate", "energy"],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": { "en": "Before you start", "fr": "Avant de commencer" },
+      "description": {
+        "en": "Sign in to the Viessmann developer portal with your ViCare account and create a client whose redirect URI is the address shown under the Connect button below. Paste its client ID here, save, then click Connect. The Documentation link details every step.",
+        "fr": "Connectez-vous au portail développeur Viessmann avec votre compte ViCare et créez un client dont l'URI de redirection est l'adresse affichée sous le bouton Connecter ci-dessous. Collez son identifiant client ici, enregistrez, puis cliquez sur Connecter. Le lien Documentation détaille chaque étape."
+      },
+      "links": [
+        {
+          "url": "https://app.developer.viessmann-climatesolutions.com",
+          "label": { "en": "Viessmann developer portal", "fr": "Portail développeur Viessmann" }
+        }
+      ]
+    },
+    {
+      "key": "client_id",
+      "type": "string",
+      "label": { "en": "Client ID", "fr": "Identifiant client (client ID)" },
+      "description": {
+        "en": "Client ID of the application created on the Viessmann developer portal.",
+        "fr": "Identifiant client de l'application créée sur le portail développeur Viessmann."
+      },
+      "placeholder": {
+        "en": "e.g. 0123456789abcdef0123456789abcdef",
+        "fr": "ex. 0123456789abcdef0123456789abcdef"
+      },
+      "required": true
+    },
+    {
+      "key": "vicare_account",
+      "type": "oauth2",
+      "label": { "en": "ViCare account", "fr": "Compte ViCare" },
+      "description": {
+        "en": "Save the client ID first, then sign in with your ViCare account.",
+        "fr": "Enregistrez d'abord l'identifiant client, puis connectez-vous avec votre compte ViCare."
+      }
+    },
+    {
+      "key": "poll_interval",
+      "type": "number",
+      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "description": {
+        "en": "Seconds between two readings of a gateway. The free ViCare plan allows 1450 calls a day: 120 s uses about half of it, and the interval is multiplied by the number of gateways.",
+        "fr": "Secondes entre deux lectures d'une passerelle. L'offre ViCare gratuite autorise 1450 appels par jour : 120 s en consomment environ la moitié, et l'intervalle est multiplié par le nombre de passerelles."
+      },
+      "placeholder": { "en": "e.g. 120", "fr": "ex. 120" },
+      "required": false,
+      "default": 120,
+      "min": 60,
+      "max": 3600
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": { "en": "Test the connection", "fr": "Tester la connexion" },
+      "timeout_seconds": 60
+    }
+  ]
+}
