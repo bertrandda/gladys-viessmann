@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-11
+
 ### Added
 
 - Viessmann ViCare account linking from the Gladys Configuration screen
@@ -28,4 +30,5 @@ the notes of the version's GitHub Release.
 - "Test the connection" button in the Configuration screen.
 - Documentation in English and French.
 
-[Unreleased]: https://github.com/bertrandda/gladys-viessmann/commits/master
+[Unreleased]: https://github.com/bertrandda/gladys-viessmann/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/bertrandda/gladys-viessmann/releases/tag/v1.0.0
