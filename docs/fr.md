@@ -32,13 +32,18 @@ jour.
 
 ## 2. Configurer l'intégration dans Gladys
 
-1. Dans l'onglet **Configuration** de l'intégration, collez l'identifiant
-   client puis **enregistrez**.
-2. Dans le bloc **Compte ViCare**, cliquez sur **Connecter**, connectez-vous
-   avec votre compte ViCare et acceptez l'accès.
-3. Le statut passe à « Connecté ». Le bouton **Tester la connexion** indique
+L'ordre compte : Gladys a besoin de l'identifiant client enregistré pour
+lancer la connexion.
+
+1. Dans l'onglet **Configuration** de l'intégration (étape 1 de l'écran),
+   collez l'identifiant client.
+2. Cliquez sur **Enregistrer la configuration**, en bas de la page. Le message
+   en haut de l'écran commence alors par « Identifiant client enregistré ».
+3. Seulement ensuite, à l'étape 2 (**Compte ViCare**), cliquez sur
+   **Connecter**, connectez-vous avec votre compte ViCare et acceptez l'accès.
+4. Le statut passe à « Connecté ». Le bouton **Tester la connexion** indique
    les installations, passerelles et appareils trouvés.
-4. Dans l'onglet **Découverte**, ajoutez les appareils et placez chaque
+5. Dans l'onglet **Découverte**, ajoutez les appareils et placez chaque
    circuit de chauffage dans sa pièce.
 
 ## Appareils créés
@@ -130,7 +135,12 @@ indique les modes acceptés.
 ## Dépannage
 
 - **« Saisissez l'identifiant client… »** : collez le Client ID du portail
-  développeur et enregistrez avant de cliquer sur Connecter.
+  développeur et cliquez sur **Enregistrer la configuration** avant de cliquer
+  sur Connecter.
+- **« Erreur au lancement de la connexion »** sous le bouton Connecter, avec
+  **« L'identifiant client n'est pas encore enregistré… »** en haut de
+  l'écran : cliquez sur **Enregistrer la configuration** en bas de la page,
+  puis à nouveau sur **Connecter**.
 - **Erreur de redirection lors de la connexion** : l'URI de redirection du
   client sur le portail doit être exactement celle affichée sous le bouton
   Connecter.

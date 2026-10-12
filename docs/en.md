@@ -28,13 +28,17 @@ The free plan ("Basic") is enough: it allows 1450 API calls a day.
 
 ## 2. Configure the integration in Gladys
 
-1. In the **Configuration** tab of the integration, paste the client ID and
-   **save**.
-2. In the **ViCare account** block, click **Connect**, sign in with your ViCare
-   account and accept the access.
-3. The status turns to "Connected". The **Test the connection** button lists
+The order matters: Gladys needs the saved client ID to start the connection.
+
+1. In the **Configuration** tab of the integration (step 1 of the screen),
+   paste the client ID.
+2. Click **Save configuration**, at the bottom of the page. The message at the
+   top of the screen then starts with "Client ID saved".
+3. Only then, in step 2 (**ViCare account**), click **Connect**, sign in with
+   your ViCare account and accept the access.
+4. The status turns to "Connected". The **Test the connection** button lists
    the installations, gateways and appliances found.
-4. In the **Discovery** tab, add the devices and put each heating circuit in
+5. In the **Discovery** tab, add the devices and put each heating circuit in
    its room.
 
 ## Devices
@@ -124,7 +128,10 @@ accepted modes.
 ## Troubleshooting
 
 - **"Enter the client ID…"**: paste the Client ID of the developer portal and
-  save before clicking Connect.
+  click **Save configuration** before clicking Connect.
+- **"There was an error starting the connection"** under the Connect button,
+  with **"The client ID is not saved yet…"** at the top of the screen: click
+  **Save configuration** at the bottom of the page, then **Connect** again.
 - **Redirect error while connecting**: the redirect URI of the client on the
   portal must be exactly the one shown under the Connect button.
 - **"The ViCare authorization expired or was revoked"**: click **Connect**

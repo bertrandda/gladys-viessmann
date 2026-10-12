@@ -6,12 +6,18 @@ import { ViCareAuthError, ViCareRateLimitError } from './vicare/errors.js';
 
 export const MESSAGES = {
   missingClientId: {
-    en: 'Enter the client ID of your Viessmann developer application, save, then click Connect.',
-    fr: "Saisissez l'identifiant client (client ID) de votre application développeur Viessmann, enregistrez, puis cliquez sur Connecter.",
+    en: 'Enter the client ID of your Viessmann developer application, click Save configuration at the bottom of the page, then click Connect.',
+    fr: "Saisissez l'identifiant client (client ID) de votre application développeur Viessmann, cliquez sur « Enregistrer la configuration » en bas de la page, puis sur « Connecter ».",
+  },
+  // Connect clicked before the client ID was saved: Gladys only shows a
+  // generic error under the button, this status says what to do.
+  saveBeforeConnect: {
+    en: 'The client ID is not saved yet: click Save configuration at the bottom of the page first, then Connect again.',
+    fr: "L'identifiant client n'est pas encore enregistré : cliquez d'abord sur « Enregistrer la configuration » en bas de la page, puis à nouveau sur « Connecter ».",
   },
   notLinked: {
-    en: 'Click Connect to link your ViCare account.',
-    fr: 'Cliquez sur Connecter pour lier votre compte ViCare.',
+    en: 'Client ID saved: click Connect to link your ViCare account.',
+    fr: 'Identifiant client enregistré : cliquez sur « Connecter » pour lier votre compte ViCare.',
   },
   authExpired: {
     en: 'The ViCare authorization expired or was revoked: click Connect again.',

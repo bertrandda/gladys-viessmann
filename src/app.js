@@ -173,7 +173,10 @@ export function registerHandlers(
     // The client id may have been saved a second ago: read the stored one.
     const { client_id: clientId } = normalizeConfig(await gladys.getConfig());
     if (!clientId) {
-      throw new Error('Enter and save the client ID of your Viessmann application first');
+      // Gladys shows its own generic error for a failed Connect: the status
+      // message at the top of the screen is what explains it.
+      await reportStatus(false, MESSAGES.saveBeforeConnect);
+      throw new Error('No saved client ID: save the configuration before clicking Connect');
     }
     const { state, verifier } = pending.create(clientId);
     return buildAuthorizeUrl({ clientId, redirectUri, state, verifier });

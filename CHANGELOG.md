@@ -13,6 +13,11 @@ the notes of the version's GitHub Release.
 ### Changed
 
 - Gladys integration SDK updated to 0.15.0.
+- Configuration screen in two numbered steps: the client ID and the refresh
+  interval first, then the ViCare account with the Connect button, so that
+  "Save configuration" clearly comes before "Connect". Clicking Connect before
+  saving the client ID now says to save first, and the status confirms the
+  saved client ID.
 
 ## [1.0.0] - 2026-10-11
 

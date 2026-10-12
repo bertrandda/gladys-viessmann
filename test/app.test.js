@@ -82,12 +82,27 @@ test('the callback refuses a state it did not issue', async (t) => {
 });
 
 test('Connect without a saved client id explains what to do', async (t) => {
-  const { gladys } = setup(t);
+  const { vicare, gladys } = setup(t);
   await gladys.connect();
   await assert.rejects(
     gladys.handlers.oauthAuthorizeUrl('vicare_account', REDIRECT_URI),
     /client ID/,
   );
+  // Gladys shows a generic error under the button: the status says to save.
+  assert.deepEqual(gladys.lastStatus(), {
+    connected: false,
+    message: MESSAGES.saveBeforeConnect,
+  });
+
+  // Saving the client ID moves on to the next step, and Connect then works.
+  gladys.config.client_id = 'client-123';
+  await gladys.handlers.configUpdated({ ...gladys.config });
+  assert.deepEqual(gladys.lastStatus(), { connected: false, message: MESSAGES.notLinked });
+  const authorizeUrl = new URL(
+    await gladys.handlers.oauthAuthorizeUrl('vicare_account', REDIRECT_URI),
+  );
+  assert.equal(authorizeUrl.searchParams.get('client_id'), 'client-123');
+  assert.equal(vicare.requests.length, 0);
 });
 
 test('a revoked authorization asks to connect again', async (t) => {

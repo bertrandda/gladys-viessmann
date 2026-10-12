@@ -107,6 +107,19 @@ test('section fields are purely presentational', () => {
   }
 });
 
+// Gladys draws the Save configuration button at the bottom of the form and
+// Connect needs the saved client ID: every field to save comes first, then a
+// section introducing the account step.
+test('the Connect button comes after every field to save, in its own section', () => {
+  const schema = manifest.config_schema;
+  const oauthIndex = schema.findIndex((f) => f.type === 'oauth2');
+  const savable = schema.filter((f) => f.type !== 'section' && f.type !== 'oauth2');
+  for (const field of savable) {
+    assert.ok(schema.indexOf(field) < oauthIndex, `"${field.key}" must come before Connect`);
+  }
+  assert.equal(schema[oauthIndex - 1].type, 'section', 'a section must introduce Connect');
+});
+
 test('the manifest version is the package version, and the image is tagged with it', () => {
   assert.equal(manifest.version, pkg.version, 'manifest version must match package.json');
   assert.ok(
