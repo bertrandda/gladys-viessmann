@@ -241,3 +241,32 @@ test('model ids become readable names', () => {
   assert.equal(modelLabel('E3_Vitodens_300_W'), 'Vitodens 300 W');
   assert.equal(modelLabel(''), 'Viessmann');
 });
+
+test('a feature type Gladys 5.1 does not know is refused, even if the SDK knows it', async () => {
+  const fake = createFakeGladys();
+  const ids = fake.externalIds('heating-circuit', 'x');
+  const feature = (category, type) => ({
+    external_id: ids.feature(type),
+    name: type,
+    category,
+    type,
+    min: 0,
+    max: 5,
+    read_only: false,
+    has_feedback: true,
+    keep_history: true,
+  });
+  const device = (features) => [{ name: 'Circuit', external_id: ids.device, features }];
+  await assert.rejects(
+    fake.publishDiscoveredDevices(
+      device([
+        feature(DEVICE_FEATURE_CATEGORIES.THERMOSTAT, DEVICE_FEATURE_TYPES.THERMOSTAT.PRESET),
+      ]),
+    ),
+    /thermostat\/preset is not in Gladys 5\.1/,
+  );
+  // The camera preset shares the type name and exists in Gladys 5.1.
+  await fake.publishDiscoveredDevices(
+    device([feature(DEVICE_FEATURE_CATEGORIES.CAMERA, DEVICE_FEATURE_TYPES.CAMERA.PRESET)]),
+  );
+});

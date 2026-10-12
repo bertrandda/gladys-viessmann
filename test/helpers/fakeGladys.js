@@ -6,6 +6,10 @@
 // registered handlers, emit 'connected'), and checks the payloads the way the
 // Gladys 5.1 host API does: external id prefix, known category/type/unit,
 // mandatory min/max, at most 100 numeric states per request.
+//
+// The known types come from the SDK, which follows the latest Gladys: the
+// pairs it knows and Gladys 5.1 does not (the manifest minimum) are refused
+// on top of it.
 // -----------------------------------------------------------------------------
 
 import { EventEmitter } from 'node:events';
@@ -18,6 +22,11 @@ import {
 const CATEGORIES = Object.values(DEVICE_FEATURE_CATEGORIES);
 const TYPES = Object.values(DEVICE_FEATURE_TYPES).flatMap((group) => Object.values(group));
 const UNITS = Object.values(DEVICE_FEATURE_UNITS);
+// Category/type pairs added after Gladys 5.1. Matched on both: `preset` alone
+// is also the camera preset, which 5.1 knows.
+const NOT_IN_GLADYS_5_1 = [
+  [DEVICE_FEATURE_CATEGORIES.THERMOSTAT, DEVICE_FEATURE_TYPES.THERMOSTAT.PRESET],
+];
 
 // Keep the test output readable: the integration logs every refresh.
 process.env.LOG_LEVEL ??= 'silent';
@@ -128,6 +137,9 @@ function validateDevice(device, index, prefix) {
     }
     if (!TYPES.includes(feature.type)) {
       throw new Error(`${featurePath}.type: unknown type ${feature.type}`);
+    }
+    if (NOT_IN_GLADYS_5_1.some(([c, type]) => c === feature.category && type === feature.type)) {
+      throw new Error(`${featurePath}: ${feature.category}/${feature.type} is not in Gladys 5.1`);
     }
     if (feature.unit !== undefined && !UNITS.includes(feature.unit)) {
       throw new Error(`${featurePath}.unit: unknown unit ${feature.unit}`);
