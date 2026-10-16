@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-16
+
 ### Added
 
 - "Heating schedule" dashboard widget: the active program, the live setpoint,
@@ -45,5 +47,6 @@ the notes of the version's GitHub Release.
 - "Test the connection" button in the Configuration screen.
 - Documentation in English and French.
 
-[Unreleased]: https://github.com/bertrandda/gladys-viessmann/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/bertrandda/gladys-viessmann/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/bertrandda/gladys-viessmann/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/bertrandda/gladys-viessmann/releases/tag/v1.0.0
