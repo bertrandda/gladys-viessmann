@@ -2,9 +2,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { registerHandlers } from '../src/app.js';
-import { MESSAGES } from '../src/messages.js';
+import { MESSAGES, WIDGET_MESSAGES } from '../src/messages.js';
 import { createFakeGladys } from './helpers/fakeGladys.js';
-import { HEATPUMP_GATEWAY, createFakeViCare, fixture, linkedConfig } from './helpers/fakeViCare.js';
+import {
+  BOILER_GATEWAY,
+  HEATPUMP_GATEWAY,
+  createFakeViCare,
+  fixture,
+  linkedConfig,
+} from './helpers/fakeViCare.js';
 
 const REDIRECT_URI = 'https://my.gladysassistant.com/redirect/oauth';
 
@@ -81,12 +87,12 @@ test('the callback refuses a state it did not issue', async (t) => {
   assert.equal(vicare.requests.length, 0);
 });
 
-test('Connect without a saved client id explains what to do', async (t) => {
+test('Connect without a saved client id explains what to do, in both languages', async (t) => {
   const { gladys } = setup(t);
   await gladys.connect();
   await assert.rejects(
     gladys.handlers.oauthAuthorizeUrl('vicare_account', REDIRECT_URI),
-    /client ID/,
+    /Save the configuration with the client ID first.*Enregistrez d'abord la configuration/,
   );
 });
 
@@ -204,4 +210,105 @@ test('a failed start is retried later, even after a failed test', async (t) => {
   assert.equal(vicare.apiRequests().length, calls + 3);
   assert.deepEqual(gladys.lastStatus(), { connected: true, message: undefined });
   assert.equal(gladys.discoveredDevices.length, 6);
+});
+
+// --- Dashboard widget ---------------------------------------------------------
+
+const boilerCircuit = (gladys) =>
+  gladys.externalIds('heating-circuit', `${BOILER_GATEWAY}-0-0`).device;
+
+test('the widget shows the schedule of the chosen circuit without calling the API', async (t) => {
+  const { vicare, gladys } = setup(t, { config: linkedConfig() });
+  await gladys.connect();
+  const calls = vicare.requests.length;
+  const content = await gladys.handlers['widget:heating_schedule']({
+    settings: { circuit: boilerCircuit(gladys) },
+    language: 'fr',
+    units: 'metric',
+  });
+  assert.equal(vicare.requests.length, calls);
+  assert.equal(content.ttl_seconds, 120);
+  assert.ok(content.components.some((c) => c.type === 'status'));
+});
+
+test('the widget explains a missing ViCare link', async (t) => {
+  const { gladys } = setup(t, { config: { client_id: 'client-123' } });
+  await gladys.connect();
+  const content = await gladys.handlers['widget:heating_schedule']({ settings: {} });
+  assert.deepEqual(content.components, [{ type: 'text', text: WIDGET_MESSAGES.notLinked }]);
+});
+
+test('the curve form sends setCurve within the constraints, then reads the gateway again', async (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const { vicare, gladys } = setup(t, { config: linkedConfig() });
+  await gladys.connect();
+  const message = await gladys.handlers['widgetAction:heating_schedule']('set_curve', undefined, {
+    settings: { circuit: boilerCircuit(gladys) },
+    values: { slope: 1.43, shift: 6 },
+  });
+  assert.deepEqual(vicare.commands(), [
+    {
+      feature: 'heating.circuits.0.heating.curve',
+      command: 'setCurve',
+      deviceId: '0',
+      params: { slope: 1.4, shift: 6 },
+    },
+  ]);
+  assert.equal(message.fr, 'Courbe de chauffe envoyée : pente 1.4, parallèle 6.');
+
+  const calls = vicare.apiRequests().length;
+  t.mock.timers.tick(15_000);
+  for (let i = 0; i < 50; i += 1) {
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  assert.equal(vicare.apiRequests().length, calls + 1);
+  assert.deepEqual(gladys.widgetRefreshes, ['heating_schedule']);
+});
+
+test('on Gladys 5.1 the curve button arrives without the form: nothing is sent', async (t) => {
+  const { vicare, gladys } = setup(t, { config: linkedConfig() });
+  await gladys.connect();
+  const message = await gladys.handlers['widgetAction:heating_schedule']('set_curve', undefined, {
+    settings: { circuit: boilerCircuit(gladys) },
+  });
+  assert.deepEqual(message, WIDGET_MESSAGES.curveNeedsForm);
+  assert.deepEqual(vicare.commands(), []);
+});
+
+test('the curve form refuses a device that is not a heating circuit', async (t) => {
+  const { vicare, gladys } = setup(t, { config: linkedConfig() });
+  await gladys.connect();
+  const dhw = gladys.externalIds('dhw', `${BOILER_GATEWAY}-0`).device;
+  await assert.rejects(
+    gladys.handlers['widgetAction:heating_schedule']('set_curve', undefined, {
+      settings: { circuit: dhw },
+      values: { slope: 1.2, shift: 4 },
+    }),
+    /Choose a heating circuit/,
+  );
+  assert.deepEqual(vicare.commands(), []);
+});
+
+test('the widget is nudged after a successful refresh only', async (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  let down = false;
+  const { gladys } = setup(t, {
+    config: linkedConfig(),
+    override: ({ url }) =>
+      down && url.pathname.includes('/features')
+        ? { status: 503, body: { statusCode: 503, message: 'Unavailable' } }
+        : undefined,
+  });
+  await gladys.connect();
+  const run = async () => {
+    t.mock.timers.tick(2 * 120 * 1000);
+    for (let i = 0; i < 50; i += 1) {
+      await new Promise((resolve) => setImmediate(resolve));
+    }
+  };
+  await run();
+  assert.equal(gladys.widgetRefreshes.length, 1);
+  down = true;
+  await run();
+  assert.equal(gladys.widgetRefreshes.length, 1);
 });

@@ -9,6 +9,8 @@
 //      start the refresh loop (src/poller.js);
 //   3. the "Connect" button runs the OAuth2 flow (onOAuthAuthorizeUrl /
 //      onOAuthCallback), then step 2.
+// The dashboard widget (src/widgets/heatingSchedule.js) reads the features the
+// refresh loop keeps, and is nudged after each refresh.
 // -----------------------------------------------------------------------------
 
 import { createLogger } from '@gladysassistant/integration-sdk';
@@ -16,11 +18,26 @@ import { testConnection } from './actions.js';
 import { CLEARED_TOKENS, normalizeConfig, tokensOf } from './config.js';
 import { DeviceRegistry } from './devices/index.js';
 import { discoverInventory } from './inventory.js';
-import { MESSAGES, errorMessage } from './messages.js';
+import {
+  MESSAGES,
+  OAUTH_ERRORS,
+  WIDGET_MESSAGES,
+  curveSetMessage,
+  errorMessage,
+} from './messages.js';
 import { Poller } from './poller.js';
 import { ViCareClient } from './vicare/client.js';
 import { ViCareAuthError, ViCareRateLimitError } from './vicare/errors.js';
 import { PendingAuthorizations, buildAuthorizeUrl, exchangeCode } from './vicare/oauth.js';
+import {
+  SET_CURVE_ACTION,
+  WIDGET_KEY,
+  curveCommand,
+  curveFeature,
+  curveParams,
+  messageContent,
+  scheduleContent,
+} from './widgets/heatingSchedule.js';
 
 const logger = createLogger({ name: 'viessmann' });
 
@@ -93,6 +110,15 @@ export function registerHandlers(
     return { ...inventory, unitCount: registry.units.length };
   }
 
+  /** Ask the open dashboards to read the widget again. */
+  function refreshWidget() {
+    try {
+      gladys.requestWidgetRefresh(WIDGET_KEY);
+    } catch (err) {
+      logger.warn('Could not nudge the dashboard widget', err.message);
+    }
+  }
+
   function stopAll() {
     poller?.stop();
     poller = null;
@@ -111,6 +137,7 @@ export function registerHandlers(
       intervalSeconds: config.poll_interval,
       now,
       onResult: (err) => reportStatus(!err, err ? errorMessage(err) : undefined),
+      onRefreshed: refreshWidget,
     });
     await poller.start();
     await reportStatus(true);
@@ -173,7 +200,7 @@ export function registerHandlers(
     // The client id may have been saved a second ago: read the stored one.
     const { client_id: clientId } = normalizeConfig(await gladys.getConfig());
     if (!clientId) {
-      throw new Error('Enter and save the client ID of your Viessmann application first');
+      throw new Error(OAUTH_ERRORS.saveClientIdFirst);
     }
     const { state, verifier } = pending.create(clientId);
     return buildAuthorizeUrl({ clientId, redirectUri, state, verifier });
@@ -182,7 +209,7 @@ export function registerHandlers(
   gladys.onOAuthCallback(async (_key, { code, state, redirectUri }) => {
     const authorization = pending.consume(state);
     if (!authorization) {
-      throw new Error('Unknown or expired authorization: click Connect again');
+      throw new Error(OAUTH_ERRORS.unknownAuthorization);
     }
     const tokens = await exchangeCode(fetchImpl, {
       clientId: authorization.clientId,
@@ -263,6 +290,63 @@ export function registerHandlers(
       poller?.setIntervalSeconds(config.poll_interval);
     }
   });
+
+  // --- Dashboard widget -------------------------------------------------------
+
+  gladys.onWidgetGet(WIDGET_KEY, async ({ settings } = {}) => {
+    const ttlSeconds = config.poll_interval;
+    if (readiness() !== 'ok') {
+      return messageContent(WIDGET_MESSAGES.notLinked, ttlSeconds);
+    }
+    const unit = registry.unit(settings?.circuit);
+    return scheduleContent({
+      unit,
+      features: unit && registry.featuresOf(unit.target),
+      ttlSeconds,
+    });
+  });
+
+  gladys.onWidgetAction(WIDGET_KEY, async (actionKey, _params, { settings, values } = {}) => {
+    if (actionKey !== SET_CURVE_ACTION) {
+      throw new Error(`Unknown widget action ${actionKey}`);
+    }
+    if (readiness() !== 'ok') {
+      return WIDGET_MESSAGES.notLinked;
+    }
+    // A Gladys 5.1 core relays the tap without the form.
+    if (values === undefined) {
+      return WIDGET_MESSAGES.curveNeedsForm;
+    }
+    const unit = registry.unit(settings?.circuit);
+    const circuit = unit?.target.circuit;
+    if (circuit === undefined) {
+      throw new Error('Choose a heating circuit in the widget settings');
+    }
+    const { target } = unit;
+    const command = curveCommand(registry.featuresOf(target), circuit);
+    if (!command) {
+      throw new Error('The heating curve of this circuit cannot be changed');
+    }
+    const params = curveParams(command, values);
+    if (!params) {
+      throw new Error('The slope and the shift must be numbers');
+    }
+    await client.executeCommand({
+      installationId: target.installationId,
+      gatewaySerial: target.gatewaySerial,
+      deviceId: target.deviceId,
+      feature: curveFeature(circuit),
+      command: 'setCurve',
+      params,
+    });
+    logger.info(
+      `Heating curve of circuit ${circuit} <- slope ${params.slope}, shift ${params.shift}`,
+    );
+    poller?.refreshSoon(target.gatewaySerial);
+    return curveSetMessage(params);
+  });
+
+  // --- Actions ----------------------------------------------------------------
 
   gladys.onAction('test_connection', () =>
     testConnection({

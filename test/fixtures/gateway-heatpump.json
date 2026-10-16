@@ -216,6 +216,238 @@
       "uri": "https://api.viessmann-climatesolutions.com/iot/v2/features/installations/123456/gateways/7633107093013212/devices/0/features/heating.circuits.0.operating.modes.standby"
     },
     {
+      "feature": "heating.circuits.0.heating.curve",
+      "gatewayId": "7633107093013212",
+      "deviceId": "0",
+      "isEnabled": true,
+      "isReady": true,
+      "properties": {
+        "shift": {
+          "type": "number",
+          "unit": "",
+          "value": 4
+        },
+        "slope": {
+          "type": "number",
+          "unit": "",
+          "value": 0.6
+        }
+      },
+      "commands": {
+        "setCurve": {
+          "isExecutable": true,
+          "name": "setCurve",
+          "params": {
+            "shift": {
+              "constraints": {
+                "max": 40,
+                "min": -13,
+                "stepping": 1
+              },
+              "required": true,
+              "type": "number"
+            },
+            "slope": {
+              "constraints": {
+                "max": 3.5,
+                "min": 0.2,
+                "stepping": 0.1
+              },
+              "required": true,
+              "type": "number"
+            }
+          },
+          "uri": "https://api.viessmann-climatesolutions.com/iot/v2/features/installations/123456/gateways/7633107093013212/devices/0/features/heating.circuits.0.heating.curve/commands/setCurve"
+        }
+      },
+      "uri": "https://api.viessmann-climatesolutions.com/iot/v2/features/installations/123456/gateways/7633107093013212/devices/0/features/heating.circuits.0.heating.curve"
+    },
+    {
+      "feature": "heating.circuits.0.heating.schedule",
+      "gatewayId": "7633107093013212",
+      "deviceId": "0",
+      "isEnabled": true,
+      "isReady": true,
+      "properties": {
+        "active": {
+          "type": "boolean",
+          "value": true
+        },
+        "entries": {
+          "type": "Schedule",
+          "value": {
+            "fri": [
+              {
+                "end": "03:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "00:00"
+              },
+              {
+                "end": "05:00",
+                "mode": "comfort",
+                "position": 1,
+                "start": "03:00"
+              },
+              {
+                "end": "24:00",
+                "mode": "normal",
+                "position": 2,
+                "start": "05:00"
+              }
+            ],
+            "mon": [
+              {
+                "end": "03:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "00:00"
+              },
+              {
+                "end": "05:00",
+                "mode": "comfort",
+                "position": 1,
+                "start": "03:00"
+              },
+              {
+                "end": "24:00",
+                "mode": "normal",
+                "position": 2,
+                "start": "05:00"
+              }
+            ],
+            "sat": [
+              {
+                "end": "03:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "00:00"
+              },
+              {
+                "end": "05:00",
+                "mode": "comfort",
+                "position": 1,
+                "start": "03:00"
+              },
+              {
+                "end": "24:00",
+                "mode": "normal",
+                "position": 2,
+                "start": "05:00"
+              }
+            ],
+            "sun": [
+              {
+                "end": "03:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "00:00"
+              },
+              {
+                "end": "05:00",
+                "mode": "comfort",
+                "position": 1,
+                "start": "03:00"
+              },
+              {
+                "end": "24:00",
+                "mode": "normal",
+                "position": 2,
+                "start": "05:00"
+              }
+            ],
+            "thu": [
+              {
+                "end": "03:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "00:00"
+              },
+              {
+                "end": "05:00",
+                "mode": "comfort",
+                "position": 1,
+                "start": "03:00"
+              },
+              {
+                "end": "24:00",
+                "mode": "normal",
+                "position": 2,
+                "start": "05:00"
+              }
+            ],
+            "tue": [
+              {
+                "end": "03:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "00:00"
+              },
+              {
+                "end": "05:00",
+                "mode": "comfort",
+                "position": 1,
+                "start": "03:00"
+              },
+              {
+                "end": "24:00",
+                "mode": "normal",
+                "position": 2,
+                "start": "05:00"
+              }
+            ],
+            "wed": [
+              {
+                "end": "03:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "00:00"
+              },
+              {
+                "end": "05:00",
+                "mode": "comfort",
+                "position": 1,
+                "start": "03:00"
+              },
+              {
+                "end": "24:00",
+                "mode": "normal",
+                "position": 2,
+                "start": "05:00"
+              }
+            ]
+          }
+        }
+      },
+      "commands": {
+        "resetSchedule": {
+          "isExecutable": true,
+          "name": "resetSchedule",
+          "params": {},
+          "uri": "https://api.viessmann-climatesolutions.com/iot/v2/features/installations/123456/gateways/7633107093013212/devices/0/features/heating.circuits.0.heating.schedule/commands/resetSchedule"
+        },
+        "setSchedule": {
+          "isExecutable": true,
+          "name": "setSchedule",
+          "params": {
+            "newSchedule": {
+              "constraints": {
+                "defaultMode": "reduced",
+                "maxEntries": 4,
+                "modes": ["normal", "comfort"],
+                "overlapAllowed": false,
+                "resolution": 10
+              },
+              "required": true,
+              "type": "Schedule"
+            }
+          },
+          "uri": "https://api.viessmann-climatesolutions.com/iot/v2/features/installations/123456/gateways/7633107093013212/devices/0/features/heating.circuits.0.heating.schedule/commands/setSchedule"
+        }
+      },
+      "uri": "https://api.viessmann-climatesolutions.com/iot/v2/features/installations/123456/gateways/7633107093013212/devices/0/features/heating.circuits.0.heating.schedule"
+    },
+    {
       "feature": "heating.circuits.0.operating.programs.active",
       "gatewayId": "7633107093013212",
       "deviceId": "0",

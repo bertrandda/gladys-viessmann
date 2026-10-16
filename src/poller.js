@@ -34,14 +34,24 @@ export class Poller {
    * @param {import('./devices/index.js').DeviceRegistry} options.registry
    * @param {number} options.intervalSeconds - Refresh interval for one gateway.
    * @param {(error: Error | null) => void} [options.onResult] - Outcome of every refresh.
+   * @param {() => void} [options.onRefreshed] - Fresh features are in the registry.
    * @param {() => number} [options.now]
    */
-  constructor({ gladys, client, registry, intervalSeconds, onResult = () => {}, now = Date.now }) {
+  constructor({
+    gladys,
+    client,
+    registry,
+    intervalSeconds,
+    onResult = () => {},
+    onRefreshed = () => {},
+    now = Date.now,
+  }) {
     this.gladys = gladys;
     this.client = client;
     this.registry = registry;
     this.intervalSeconds = intervalSeconds;
     this.onResult = onResult;
+    this.onRefreshed = onRefreshed;
     this.now = now;
     this.running = false;
     this.timer = null;
@@ -98,6 +108,7 @@ export class Poller {
         await this.refreshGateway(gateway);
       }
       this.onResult(null);
+      this.onRefreshed();
     } catch (err) {
       delay = this.handleError(err);
     }
@@ -125,6 +136,7 @@ export class Poller {
         for (const gateway of gateways) {
           await this.refreshGateway(gateway);
         }
+        this.onRefreshed();
       } catch (err) {
         const delay = this.handleError(err);
         if (this.running && delay !== null) {

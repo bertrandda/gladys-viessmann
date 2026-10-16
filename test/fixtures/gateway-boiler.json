@@ -270,6 +270,148 @@
       "uri": "https://api.viessmann-climatesolutions.com/iot/v2/features/installations/123456/gateways/7571381573112225/devices/0/features/heating.circuits.0.operating.modes.standby"
     },
     {
+      "feature": "heating.circuits.0.heating.curve",
+      "gatewayId": "7571381573112225",
+      "deviceId": "0",
+      "isEnabled": true,
+      "isReady": true,
+      "properties": {
+        "shift": {
+          "type": "number",
+          "unit": "",
+          "value": 4
+        },
+        "slope": {
+          "type": "number",
+          "unit": "",
+          "value": 1.2
+        }
+      },
+      "commands": {
+        "setCurve": {
+          "isExecutable": true,
+          "name": "setCurve",
+          "params": {
+            "shift": {
+              "constraints": {
+                "max": 40,
+                "min": -13,
+                "stepping": 1
+              },
+              "required": true,
+              "type": "number"
+            },
+            "slope": {
+              "constraints": {
+                "max": 3.5,
+                "min": 0.2,
+                "stepping": 0.1
+              },
+              "required": true,
+              "type": "number"
+            }
+          },
+          "uri": "https://api.viessmann-climatesolutions.com/iot/v2/features/installations/123456/gateways/7571381573112225/devices/0/features/heating.circuits.0.heating.curve/commands/setCurve"
+        }
+      },
+      "uri": "https://api.viessmann-climatesolutions.com/iot/v2/features/installations/123456/gateways/7571381573112225/devices/0/features/heating.circuits.0.heating.curve"
+    },
+    {
+      "feature": "heating.circuits.0.heating.schedule",
+      "gatewayId": "7571381573112225",
+      "deviceId": "0",
+      "isEnabled": true,
+      "isReady": true,
+      "properties": {
+        "active": {
+          "type": "boolean",
+          "value": false
+        },
+        "entries": {
+          "type": "Schedule",
+          "value": {
+            "fri": [
+              {
+                "end": "23:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "05:30"
+              }
+            ],
+            "mon": [
+              {
+                "end": "22:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "05:30"
+              }
+            ],
+            "sat": [
+              {
+                "end": "23:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "06:30"
+              }
+            ],
+            "sun": [
+              {
+                "end": "22:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "06:30"
+              }
+            ],
+            "thu": [
+              {
+                "end": "22:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "05:30"
+              }
+            ],
+            "tue": [
+              {
+                "end": "22:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "05:30"
+              }
+            ],
+            "wed": [
+              {
+                "end": "22:00",
+                "mode": "normal",
+                "position": 0,
+                "start": "05:30"
+              }
+            ]
+          }
+        }
+      },
+      "commands": {
+        "setSchedule": {
+          "isExecutable": true,
+          "name": "setSchedule",
+          "params": {
+            "newSchedule": {
+              "constraints": {
+                "defaultMode": "reduced",
+                "maxEntries": 4,
+                "modes": ["normal", "comfort"],
+                "overlapAllowed": false,
+                "resolution": 10
+              },
+              "required": true,
+              "type": "Schedule"
+            }
+          },
+          "uri": "https://api.viessmann-climatesolutions.com/iot/v2/features/installations/123456/gateways/7571381573112225/devices/0/features/heating.circuits.0.heating.schedule/commands/setSchedule"
+        }
+      },
+      "uri": "https://api.viessmann-climatesolutions.com/iot/v2/features/installations/123456/gateways/7571381573112225/devices/0/features/heating.circuits.0.heating.schedule"
+    },
+    {
       "feature": "heating.circuits.0.operating.programs.active",
       "gatewayId": "7571381573112225",
       "deviceId": "0",

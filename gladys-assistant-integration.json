@@ -18,8 +18,8 @@
       "type": "section",
       "label": { "en": "Before you start", "fr": "Avant de commencer" },
       "description": {
-        "en": "Sign in to the Viessmann developer portal with your ViCare account and create a client whose redirect URI is the address shown under the Connect button below. Paste its client ID here, save, then click Connect. The Documentation link details every step.",
-        "fr": "Connectez-vous au portail développeur Viessmann avec votre compte ViCare et créez un client dont l'URI de redirection est l'adresse affichée sous le bouton Connecter ci-dessous. Collez son identifiant client ici, enregistrez, puis cliquez sur Connecter. Le lien Documentation détaille chaque étape."
+        "en": "1. Sign in to the Viessmann developer portal with your ViCare account and create a client whose redirect URI is the address shown under the Connect button below.\n2. Paste its client ID in the field below.\n3. Save the configuration.\n4. Only then, click Connect and sign in with your ViCare account.\nThe Documentation link details every step.",
+        "fr": "1. Connectez-vous au portail développeur Viessmann avec votre compte ViCare et créez un client dont l'URI de redirection est l'adresse affichée sous le bouton Connecter ci-dessous.\n2. Collez son identifiant client dans le champ ci-dessous.\n3. Enregistrez la configuration.\n4. Seulement ensuite, cliquez sur Connecter et identifiez-vous avec votre compte ViCare.\nLe lien Documentation détaille chaque étape."
       },
       "links": [
         {
@@ -47,8 +47,8 @@
       "type": "oauth2",
       "label": { "en": "ViCare account", "fr": "Compte ViCare" },
       "description": {
-        "en": "Save the client ID first, then sign in with your ViCare account.",
-        "fr": "Enregistrez d'abord l'identifiant client, puis connectez-vous avec votre compte ViCare."
+        "en": "Save the configuration with the client ID before clicking Connect: Connect uses the saved client ID, not the one being typed.",
+        "fr": "Enregistrez la configuration avec l'identifiant client avant de cliquer sur Connecter : Connecter utilise l'identifiant enregistré, pas celui en cours de saisie."
       }
     },
     {
@@ -71,6 +71,31 @@
       "key": "test_connection",
       "label": { "en": "Test the connection", "fr": "Tester la connexion" },
       "timeout_seconds": 60
+    }
+  ],
+  "widgets": [
+    {
+      "key": "heating_schedule",
+      "label": { "en": "Heating schedule", "fr": "Programme de chauffe" },
+      "description": {
+        "en": "ViCare weekly schedule, active program and heating curve of a heating circuit.",
+        "fr": "Planning ViCare de la semaine, programme en cours et courbe de chauffe d'un circuit."
+      },
+      "icon": "calendar",
+      "settings": [
+        {
+          "key": "circuit",
+          "type": "select",
+          "source": "devices",
+          "label": { "en": "Heating circuit", "fr": "Circuit de chauffage" },
+          "description": {
+            "en": "One of the heating circuits of the integration.",
+            "fr": "Un des circuits de chauffage de l'intégration."
+          },
+          "required": true
+        }
+      ],
+      "action_timeout_seconds": 30
     }
   ]
 }
