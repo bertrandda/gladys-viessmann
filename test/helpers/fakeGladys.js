@@ -35,6 +35,7 @@ export function createFakeGladys({ config = {} } = {}) {
     states: [],
     configWrites: [],
     connectionStatuses: [],
+    widgetRefreshes: [],
 
     externalId: (suffix) => `${prefix}${suffix}`,
     externalIds(type, platformId) {
@@ -51,6 +52,8 @@ export function createFakeGladys({ config = {} } = {}) {
     onDeviceCreated: (cb) => (handlers.deviceCreated = cb),
     onDeviceUpdated: (cb) => (handlers.deviceUpdated = cb),
     onAction: (key, cb) => (handlers[`action:${key}`] = cb),
+    onWidgetGet: (key, cb) => (handlers[`widget:${key}`] = cb),
+    onWidgetAction: (key, cb) => (handlers[`widgetAction:${key}`] = cb),
     handlers,
 
     // --- Host API ---
@@ -88,6 +91,9 @@ export function createFakeGladys({ config = {} } = {}) {
     },
     async publishState(featureExternalId, state) {
       return fake.publishStates([{ device_feature_external_id: featureExternalId, state }]);
+    },
+    requestWidgetRefresh(key) {
+      fake.widgetRefreshes.push(key);
     },
 
     // --- Test helpers ---

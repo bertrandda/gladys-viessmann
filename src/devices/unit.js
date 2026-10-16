@@ -71,6 +71,12 @@ export function buildUnit(gladys, { type, platformId, name, target, features, sp
       return specsByFeatureId.get(featureExternalId);
     },
 
+    /** External id of a published feature, null when the appliance lacks it. */
+    featureExternalId(key) {
+      const id = ids.feature(key);
+      return specsByFeatureId.has(id) ? id : null;
+    },
+
     /**
      * Current states, in the `publishStates` format. Unknown values are left
      * out rather than published as a fake 0.

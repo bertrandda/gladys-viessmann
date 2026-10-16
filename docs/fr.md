@@ -33,9 +33,11 @@ jour.
 ## 2. Configurer l'intégration dans Gladys
 
 1. Dans l'onglet **Configuration** de l'intégration, collez l'identifiant
-   client puis **enregistrez**.
-2. Dans le bloc **Compte ViCare**, cliquez sur **Connecter**, connectez-vous
-   avec votre compte ViCare et acceptez l'accès.
+   client puis **enregistrez la configuration**.
+2. Seulement ensuite, dans le bloc **Compte ViCare**, cliquez sur
+   **Connecter**, connectez-vous avec votre compte ViCare et acceptez l'accès.
+   Connecter utilise l'identifiant enregistré, pas celui en cours de saisie :
+   cliquer avant d'enregistrer échoue.
 3. Le statut passe à « Connecté ». Le bouton **Tester la connexion** indique
    les installations, passerelles et appareils trouvés.
 4. Dans l'onglet **Découverte**, ajoutez les appareils et placez chaque
@@ -99,8 +101,67 @@ Mode de l'eau chaude :
 | `balanced`                                    | Automatique |
 | `comfort`                                     | Manuel      |
 
+**Éco** regroupe les modes économiques de ViCare (`eco`, `efficient`,
+`efficientWithMinComfort`, nommés « Eco » ou « Efficace » dans l'application
+selon le modèle). Gladys n'a pas de mode « Confort » pour les chauffe-eau : le
+`comfort` de ViCare s'affiche **Manuel**.
+
 Un mode que votre appareil ne propose pas est refusé, avec un message qui
 indique les modes acceptés.
+
+## Widget « Programme de chauffe »
+
+Sur un tableau de bord, ajoutez le widget **Programme de chauffe** de
+l'intégration et choisissez un circuit de chauffage. Il affiche :
+
+- le programme en cours du circuit et sa consigne, en direct ;
+- le planning ViCare de la semaine, une ligne par jour, et le programme
+  appliqué hors des plages (en général réduit) ;
+- la courbe de chauffe : pente et parallèle.
+
+Le widget ne coûte aucun appel à l'API : il utilise les valeurs du
+rafraîchissement habituel.
+
+Le planning est en lecture seule : il se modifie dans l'application ViCare.
+Le bouton **Courbe de chauffe** ouvre un formulaire pour modifier la pente et
+la parallèle (Gladys 5.2 ou plus récent ; en Gladys 5.1, le bouton l'indique).
+La courbe règle la température de départ selon la température extérieure :
+
+- trop froid quand il gèle dehors, correct en mi-saison : augmentez la pente ;
+- trop froid (ou trop chaud) quel que soit le temps : augmentez (ou baissez)
+  la parallèle.
+
+Procédez par petits pas (0,1 pour la pente, 1 pour la parallèle) et attendez
+quelques jours entre deux réglages : un bâtiment réagit lentement. Les
+températures ambiante et extérieure conservées dans l'historique de Gladys
+aident à juger du résultat.
+
+## Thermostat de Gladys 5.2 (planning et widget)
+
+Gladys 5.2 peut programmer un circuit de chauffage avec son propre planning
+hebdomadaire et l'afficher dans son widget thermostat :
+
+1. Dans **Intégrations → Thermostat**, créez un thermostat **externe**.
+2. Consigne : la **Target temperature** (consigne) du circuit. Mode : son
+   **Mode**. État : son **Operating state** (état de fonctionnement).
+   Température : sa **Room temperature** (température ambiante) si le circuit
+   a une sonde d'ambiance, sinon n'importe quel capteur de la pièce.
+3. Associez un planning si Gladys doit programmer le circuit.
+
+Bon à savoir :
+
+- La consigne écrite par Gladys modifie la température du programme que le
+  circuit applique dans ViCare (normal, réduit, confort). Si le planning
+  ViCare alterne entre normal et réduit, les consignes de Gladys atterrissent
+  dans les deux programmes. Pour que le planning de Gladys fasse foi, réglez
+  dans l'application ViCare le planning du circuit sur une seule plage
+  « normal » couvrant toute la journée. Pour garder le planning ViCare,
+  n'associez pas de planning Gladys.
+- Arrêter le thermostat passe le circuit en eau chaude seule : l'eau chaude
+  continue d'être produite. Gladys écrit alors aussi sa consigne hors-gel, et
+  réécrit la bonne consigne quand le thermostat redémarre.
+- Chaque valeur écrite par Gladys coûte un appel à l'API (une valeur inchangée
+  n'est pas renvoyée).
 
 ## Rafraîchissement et quota
 
@@ -116,21 +177,26 @@ indique les modes acceptés.
 
 ## Limites connues
 
-- Les **préréglages** (confort, éco, absence) ne sont pas encore proposés :
-  Gladys 5.1 n'a pas de fonctionnalité de préréglage pour les thermostats.
+- Les **préréglages** de thermostat (confort, éco, absence) ne sont pas
+  proposés : Gladys ne les a que depuis la 5.2, et l'intégration reste
+  compatible avec Gladys 5.1.
 - Quand le circuit est sur un programme sans température réglable (veille,
   hors-gel), la consigne n'est pas affichée et ne peut pas être modifiée.
 - Ne sont pas encore pris en charge : la modulation du brûleur (Gladys n'a
   pas de catégorie adaptée), le solaire thermique, le photovoltaïque et les
-  batteries, la ventilation, les thermostats et sondes Zigbee, la courbe de
-  chauffe et les températures de chaque programme.
+  batteries, la ventilation, les thermostats et sondes Zigbee, les
+  températures de chaque programme, et la modification des plannings
+  (affichés en lecture seule dans le widget).
+- L'heure de la chaudière ne se règle pas depuis Gladys : l'API ViCare n'a pas
+  de commande pour cela. Réglez-la depuis le menu de la chaudière.
 - Le pilotage passe uniquement par le cloud Viessmann : il faut une connexion
   à Internet.
 
 ## Dépannage
 
-- **« Saisissez l'identifiant client… »** : collez le Client ID du portail
-  développeur et enregistrez avant de cliquer sur Connecter.
+- **« Saisissez l'identifiant client… », ou Connecter échoue** : collez le
+  Client ID du portail développeur et enregistrez la configuration **avant**
+  de cliquer sur Connecter.
 - **Erreur de redirection lors de la connexion** : l'URI de redirection du
   client sur le portail doit être exactement celle affichée sous le bouton
   Connecter.

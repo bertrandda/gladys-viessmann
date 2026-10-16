@@ -74,6 +74,11 @@ export class DeviceRegistry {
     return this.byExternalId.has(deviceExternalId);
   }
 
+  /** The unit of a Gladys device external id, undefined when unknown. */
+  unit(deviceExternalId) {
+    return this.byExternalId.get(deviceExternalId);
+  }
+
   /** Gateways to poll: `{ installationId, serial }`. */
   gatewayList() {
     return [...this.gateways.values()].map(({ installationId, serial }) => ({

@@ -19,6 +19,37 @@ export const MESSAGES = {
   },
 };
 
+// Errors of the Connect flow: a thrown error carries a single string, so it
+// holds both languages.
+export const OAUTH_ERRORS = {
+  saveClientIdFirst:
+    'Save the configuration with the client ID first, then click Connect. / ' +
+    "Enregistrez d'abord la configuration avec l'identifiant client, puis cliquez sur Connecter.",
+  unknownAuthorization:
+    'Unknown or expired authorization: click Connect again. / ' +
+    'Autorisation inconnue ou expirée : cliquez à nouveau sur Connecter.',
+};
+
+// Answers of the heating schedule widget (src/widgets/heatingSchedule.js).
+export const WIDGET_MESSAGES = {
+  notLinked: {
+    en: 'The integration is not connected to ViCare yet: see its Configuration tab.',
+    fr: "L'intégration n'est pas encore connectée à ViCare : voir son onglet Configuration.",
+  },
+  curveNeedsForm: {
+    en: 'Changing the heating curve from the dashboard needs Gladys 5.2 or later.',
+    fr: 'Modifier la courbe de chauffe depuis le tableau de bord demande Gladys 5.2 ou plus récent.',
+  },
+};
+
+/** Toast confirming a heating curve change. */
+export function curveSetMessage({ slope, shift }) {
+  return {
+    en: `Heating curve sent: slope ${slope}, shift ${shift}.`,
+    fr: `Courbe de chauffe envoyée : pente ${slope}, parallèle ${shift}.`,
+  };
+}
+
 /** "14:05 UTC" */
 function utcTime(timestamp) {
   return `${new Date(timestamp).toISOString().slice(11, 16)} UTC`;

@@ -35,6 +35,11 @@ from the Configuration screen.
   behind it. The interval (120 s by default) is multiplied by the number of
   gateways, so the free plan quota (1450 calls a day) holds. An exhausted quota
   pauses the refresh until it renews.
+- **Heating schedule widget** for the dashboard (manifest `widgets`): the
+  active program, the live setpoint, the ViCare weekly schedule and the heating
+  curve of a circuit, read from the features the refresh already holds (no
+  extra API call). Its button opens a form changing the heating curve
+  (`setCurve`, Gladys 5.2 or later).
 - **Test the connection** button in the Configuration screen.
 
 ## Project structure
@@ -50,6 +55,8 @@ from the Configuration screen.
 │  ├─ actions.js                # "test_connection" manifest action
 │  ├─ inventory.js              # installations -> gateways -> appliances
 │  ├─ poller.js                 # refresh loop, quota handling, change detection
+│  ├─ widgets/
+│  │  └─ heatingSchedule.js     # "Heating schedule" dashboard widget
 │  ├─ devices/
 │  │  ├─ index.js               # registry: units, states, command routing
 │  │  ├─ unit.js                # builds a Gladys device from feature specs

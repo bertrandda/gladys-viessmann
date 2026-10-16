@@ -37,6 +37,7 @@ src/app.js                   registerHandlers(gladys, { fetch, now }): every SDK
 src/vicare/                  ViCare API: OAuth2 PKCE, client (tokens, typed errors), feature helpers
 src/inventory.js             installations -> gateways -> heating appliances + their features
 src/devices/                 Gladys devices built from feature specs (describe / read / write)
+src/widgets/                 dashboard widgets, built from the features the poller holds
 src/poller.js                own refresh loop (not Gladys onPoll): quota, change detection
 src/modes.js                 ViCare <-> Gladys mode mappings, Gladys enum values
 gladys-assistant-integration.json  manifest

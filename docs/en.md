@@ -29,9 +29,10 @@ The free plan ("Basic") is enough: it allows 1450 API calls a day.
 ## 2. Configure the integration in Gladys
 
 1. In the **Configuration** tab of the integration, paste the client ID and
-   **save**.
-2. In the **ViCare account** block, click **Connect**, sign in with your ViCare
-   account and accept the access.
+   **save the configuration**.
+2. Only then, in the **ViCare account** block, click **Connect**, sign in with
+   your ViCare account and accept the access. Connect uses the saved client
+   ID, not the one being typed: clicking it before saving fails.
 3. The status turns to "Connected". The **Test the connection** button lists
    the installations, gateways and appliances found.
 4. In the **Discovery** tab, add the devices and put each heating circuit in
@@ -93,8 +94,62 @@ Hot water mode:
 | `balanced`                                    | Auto        |
 | `comfort`                                     | Manual      |
 
+**Eco** gathers the economy modes of ViCare (`eco`, `efficient`,
+`efficientWithMinComfort`, named "Eco" or "Efficient" in the app depending on
+the model). Gladys has no "Comfort" mode for water heaters: ViCare `comfort`
+shows as **Manual**.
+
 A mode your appliance does not offer is refused, with a message listing the
 accepted modes.
+
+## Heating schedule widget
+
+On a dashboard, add the **Heating schedule** widget of the integration and
+choose a heating circuit. It shows:
+
+- the program the circuit runs now, and its setpoint, live;
+- the ViCare weekly schedule, one row a day, and the program that runs
+  outside the slots (usually reduced);
+- the heating curve: slope and shift.
+
+The widget costs no API call: it uses the values of the regular refresh.
+
+The schedule is read-only: change it in the ViCare app. The **Heating curve**
+button opens a form to change the slope and the shift (Gladys 5.2 or later;
+on Gladys 5.1 the button says so). The curve sets the supply temperature from
+the outside temperature:
+
+- too cold when it freezes outside, fine in mid-season: raise the slope;
+- too cold (or too warm) whatever the weather: raise (or lower) the shift.
+
+Change it in small steps (0.1 for the slope, 1 for the shift) and wait a few
+days between two changes: a building reacts slowly. The room and outside
+temperatures kept in the Gladys history help judging the result.
+
+## Gladys 5.2 thermostat (schedule and widget)
+
+Gladys 5.2 can program a heating circuit with its own weekly schedule and show
+it in its thermostat widget:
+
+1. In **Integrations → Thermostat**, create an **external** thermostat.
+2. Setpoint: the **Target temperature** of the circuit. Mode: its **Mode**.
+   State: its **Operating state**. Temperature: its **Room temperature** when
+   the circuit has a room sensor, otherwise any room sensor.
+3. Attach a schedule if Gladys should program the circuit.
+
+Good to know:
+
+- The setpoint Gladys writes changes the temperature of the program the
+  circuit runs in ViCare (normal, reduced, comfort). If the ViCare schedule
+  keeps switching between normal and reduced, the setpoints of Gladys land in
+  both programs. To let the Gladys schedule rule, set the ViCare schedule of
+  the circuit to a single "normal" slot over the whole day in the ViCare app.
+  To keep the ViCare schedule, do not attach a Gladys schedule.
+- Stopping the thermostat sets the circuit to hot water only: hot water keeps
+  being produced. Gladys then also writes its frost protection setpoint, and
+  writes the right setpoint back when the thermostat starts again.
+- Each value Gladys writes is one API call (an unchanged value is not sent
+  again).
 
 ## Refresh and quota
 
@@ -110,21 +165,24 @@ accepted modes.
 
 ## Known limitations
 
-- **Presets** (comfort, eco, away) are not offered yet: Gladys 5.1 has no
-  thermostat preset feature.
+- Thermostat **presets** (comfort, eco, away) are not offered: Gladys only has
+  them since 5.2, and the integration still supports Gladys 5.1.
 - When the circuit runs a program without an adjustable temperature (standby,
   frost protection), the target temperature is not shown and cannot be
   changed.
 - Not supported yet: burner modulation (Gladys has no matching category),
   solar thermal, photovoltaics and batteries, ventilation, Zigbee thermostats
-  and sensors, the heating curve and the temperature of each program.
+  and sensors, the temperature of each program, and changing the schedules
+  (shown read-only in the widget).
+- The clock of the boiler cannot be set from Gladys: the ViCare API has no
+  command for it. Set it from the boiler menu.
 - Control only goes through the Viessmann cloud: an Internet connection is
   required.
 
 ## Troubleshooting
 
-- **"Enter the client ID…"**: paste the Client ID of the developer portal and
-  save before clicking Connect.
+- **"Enter the client ID…", or Connect fails**: paste the Client ID of the
+  developer portal and save the configuration **before** clicking Connect.
 - **Redirect error while connecting**: the redirect URI of the client on the
   portal must be exactly the one shown under the Connect button.
 - **"The ViCare authorization expired or was revoked"**: click **Connect**

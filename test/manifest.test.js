@@ -38,6 +38,7 @@ function isAtLeast(version, required) {
 const allFields = [
   ...manifest.config_schema,
   ...(manifest.actions ?? []).flatMap((action) => action.fields ?? []),
+  ...(manifest.widgets ?? []).flatMap((widget) => widget.settings ?? []),
 ];
 
 test('every manifest action has a registered handler', () => {
@@ -50,6 +51,15 @@ test('every manifest action has a registered handler', () => {
       'function',
       `manifest action "${action.key}" has no handler`,
     );
+  }
+});
+
+test('every manifest widget has its content and action handlers registered', () => {
+  const gladys = createFakeGladys();
+  registerHandlers(gladys).stop();
+  for (const widget of manifest.widgets ?? []) {
+    assert.equal(typeof gladys.handlers[`widget:${widget.key}`], 'function', widget.key);
+    assert.equal(typeof gladys.handlers[`widgetAction:${widget.key}`], 'function', widget.key);
   }
 });
 
@@ -131,6 +141,7 @@ test('every text is a multi-language object with English and French', () => {
     ...allFields.flatMap((f) => [f.label, f.description, f.placeholder]),
     ...allFields.flatMap((f) => (f.links ?? []).map((link) => link.label)),
     ...(manifest.actions ?? []).map((action) => action.label),
+    ...(manifest.widgets ?? []).flatMap((widget) => [widget.label, widget.description]),
   ].filter((text) => text !== undefined);
   for (const text of texts) {
     assert.equal(typeof text, 'object', `plain string found: ${JSON.stringify(text)}`);
